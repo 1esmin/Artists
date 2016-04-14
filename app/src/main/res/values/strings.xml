@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Artists</string>
+    <string name="description">empty</string>
+    <string name="h1">Description</string>
 </resources>
