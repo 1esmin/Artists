@@ -1,19 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ArtistActivity">
+
+    <ImageView
+        android:id="@+id/artist_big_image"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_image"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="@dimen/text_margin"/>
+
+    <TextView
+        android:id="@+id/artist_genres_text"
+        android:text="@string/genres"
+        android:textSize="@dimen/usually_size"
+        android:textColor="@color/grayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/artist_big_image"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="@dimen/text_margin" />
+
+    <TextView
+        android:id="@+id/artist_albums_and_tracks_text"
+        android:text="@string/albums_and_tracks_text"
+        android:textSize="@dimen/usually_size"
+        android:textColor="@color/grayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/artist_genres_text"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="@dimen/text_margin"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/h1"
-        android:id="@+id/h1"
-        android:layout_gravity="center_horizontal" />
+        android:text="@string/biograph_text"
+        android:textSize="@dimen/biograph_size"
+        android:textColor="@android:color/black"
+        android:id="@+id/textView"
+        android:layout_below="@+id/artist_albums_and_tracks_text"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="@dimen/text_margin"/>
 
     <TextView
+        android:id="@+id/artist_description_text"
+        android:text="@string/description_text"
+        android:textSize="@dimen/usually_size"
+        android:textColor="@android:color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/description"
-        android:id="@+id/description"
-        android:layout_gravity="center_horizontal" />
-</LinearLayout>
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="@dimen/text_margin"
+        android:layout_marginRight="@dimen/text_margin" />
+
+
+</RelativeLayout>

@@ -1,5 +1,11 @@
 <resources>
-    <string name="app_name">Artists</string>
+    <string name="app_name">Исполнители</string>
     <string name="description">empty</string>
     <string name="h1">Description</string>
+    <string name="empty">Empty</string>
+    <string name="genres">genres</string>
+    <string name="albums_and_tracks_text">albums and tracks</string>
+    <string name="description_text">descriprion</string>
+    <string name="biograph_text">Биография</string>
+    <string name="content_description">artist_cover</string>
 </resources>

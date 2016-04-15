@@ -1,125 +1,86 @@
 package com.morlins.artists;
 
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.JsonReader;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.Timer;
 
-public class MainActivity extends AppCompatActivity {
-    JSONArray artists = new JSONArray();
-    ListView list;
-    LinkedList names = new LinkedList();
-    Dictionary descriptions = new Hashtable();
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
+    private ListView list;
+    private ArtistDatabase ArtistDB;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private LinkedList<Artist> artists;
+    private ImageLoader imageLoader;
+    private DisplayImageOptions options;
 
+    //константы
+    private static final String ARTIST = "artist";
+    private static final int REFRESHTIME = 4000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        new ParseTask().execute();
-        Button btnOk = (Button) findViewById(R.id.btnOk);
-        btnOk.setText("update");
-        btnOk.setOnClickListener(oclBtnOk);
-        list = (ListView) findViewById(R.id.listView);
+
+        list = (ListView) findViewById(R.id.list);
+
+        ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(config);
+        options = new DisplayImageOptions.Builder()
+                .cacheInMemory(Boolean.TRUE)
+                .cacheOnDisk(Boolean.TRUE)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .build();
+
+        ArtistDatabase ArtistDB = new ArtistDatabase(this, list, imageLoader, options);
+        ArtistDB.execute();
+
+        artists = ArtistDB.getArtists();
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Intent intent = new Intent(MainActivity.this, ArtistActivity.class);
-                intent.putExtra("description", descriptions.get(names.get(position)).toString());
+                intent.putExtra(ARTIST, artists.get(position));
                 startActivity(intent);
             }
         });
     }
 
-    public void Print (View view) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                R.layout.simple_list_item, names);
+    @Override
+    public void onRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+                ArtistDB = new ArtistDatabase(getBaseContext(), list, imageLoader, options);
+                ArtistDB.execute();
+            }
+        }, REFRESHTIME);
+
+        ArtistAdapter adapter = new ArtistAdapter(this,
+                R.layout.simple_list_item, artists, imageLoader, options);
         list.setAdapter(adapter);
-    }
-
-    View.OnClickListener oclBtnOk = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            for (int i = 0; i < artists.length(); i++) {
-                try {
-                    names.addLast(artists.getJSONObject(i).getString("name"));
-                    descriptions.put(names.getLast(), artists.getJSONObject(i).getString("description"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    };
-
-    private class ParseTask extends AsyncTask<Void, Void, String> {
-
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-        String resultJson = "";
-
-
-        @Override
-        protected String doInBackground(Void... params) {
-            // получаем данные с внешнего ресурса
-            try {
-                URL url = new URL("http://cache-default02f.cdn.yandex.net/download.cdn.yandex.net/mobilization-2016/artists.json");
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line);
-                }
-
-                resultJson = buffer.toString();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return resultJson;
-        }
-
-        @Override
-        protected void onPostExecute(String strJson) {
-            super.onPostExecute(strJson);
-            try {
-                JSONArray jarr = new JSONArray(strJson);
-                for (int i = 0; i < jarr.length(); i++) {
-                    artists.put(jarr.get(i));
-                }
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            }
-        }
     }
 
 }

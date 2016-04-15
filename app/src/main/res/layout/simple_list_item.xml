@@ -1,25 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2006 The Android Open Source Project
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-  
-          http://www.apache.org/licenses/LICENSE-2.0
-  
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/item_vertical_padding"
+        android:paddingBottom="@dimen/item_vertical_padding"
+        android:paddingLeft="@dimen/item_vertical_padding"
+        android:paddingRight="@dimen/item_vertical_padding">
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceListItemSmall"
-    android:gravity="center_vertical"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+        <ImageView
+            android:id="@+id/item_small_image"
+            android:layout_width="@dimen/small_image"
+            android:layout_height="@dimen/small_image"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/content_description" />
+    
+        <TextView
+            android:id="@+id/item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+            android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+            android:paddingTop="@dimen/padding_top"
+            android:textSize="@dimen/name_size"
+            android:layout_alignTop="@+id/item_small_image"
+            android:layout_toRightOf="@+id/item_small_image"
+            android:layout_toEndOf="@+id/item_small_image" />
+
+        <TextView
+            android:id="@+id/item_genres"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+            android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+            android:textColor="@color/grayText"
+            android:textSize="@dimen/usually_size"
+            android:layout_below="@+id/item_name"
+            android:layout_toRightOf="@+id/item_small_image"
+            android:layout_toEndOf="@+id/item_small_image" />
+
+
+        <TextView
+            android:id="@+id/item_albums_and_tracks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+            android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+            android:textColor="@color/grayText"
+            android:textSize="@dimen/usually_size"
+            android:layout_alignBottom="@+id/item_small_image"
+            android:layout_toRightOf="@+id/item_small_image"
+            android:layout_toEndOf="@+id/item_small_image" />
+
+    </RelativeLayout>
