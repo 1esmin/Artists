@@ -43,7 +43,7 @@ public class ArtistAdapter extends BaseAdapter {
         this.displayImageOptions = displayImageOptions;
     }
 
-    //возвращает исполнителя по позиции в artists
+    //возвращает исполнителя по позиции из artists
     public Artist getArtist(int position) {
         return ((Artist) getItem(position));
     }

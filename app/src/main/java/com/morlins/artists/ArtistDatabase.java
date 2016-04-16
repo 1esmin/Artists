@@ -51,10 +51,12 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
     //переопределения для реализации методов AsyncTask
     @Override
     protected String doInBackground(Void... params) {
+        LogUtil.v("ArtistDatabase.doInBackground() start");
         // получаем данные с внешнего ресурса
         try {
+            LogUtil.v("Parse URL");
             URL url = new URL(JSON_URL);
-
+            LogUtil.v("Download json");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
@@ -69,28 +71,36 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
                 builder.append(line);
             }
 
+            LogUtil.v("received json");
             resultJson = builder.toString();
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        LogUtil.v("ArtistDatabase.doInBackground() end");
         return resultJson;
     }
 
     @Override
     protected void onPostExecute(String strJson) {
+        LogUtil.v("ArtistDatabase.onPostExecute() start");
         super.onPostExecute(strJson);
         try {
+            LogUtil.v("Parse JSON");
             JSONArray json = new JSONArray(strJson);
+            LogUtil.v("Parse JSONArray");
             for (int i = 0; i < json.length(); i++) artists
                     .addLast(new Artist(json.getJSONObject(i)));
         } catch (JSONException e1) {
             e1.printStackTrace();
         }
 
+        LogUtil.v("setAdapter");
         //через адаптер записываем все в ListView (отрисовка по мере надобности)
         ArtistAdapter adapter = new ArtistAdapter(context,
                 STYLE_ITEM_LIST, artists, imageLoader, displayImageOptions);
         list.setAdapter(adapter);
+        LogUtil.v("ArtistDatabase.onPostExecute() end");
     }
 }

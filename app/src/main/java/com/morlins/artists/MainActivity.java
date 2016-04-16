@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     //строка-ключ для интента
     private static final String ARTIST = "artist";
     //время, которое крутится кружок во время обновления
-    private static final int REFRESH_TIME = 4000;
+    private static final int REFRESH_TIME = 1000;
     //layout для item'а ListView
     private static final int STYLE_ITEM_LIST = R.layout.simple_list_item;
     //цвета для кружочка обновления
@@ -37,13 +38,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private static final int HOLO_RED_LIGHT     = android.R.color.holo_red_light;
     private static final int SWIPE_CONTAINER    = R.id.swipe_container;
 
+    private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        LogUtil.v("Create Activity");
         list = (ListView) findViewById(R.id.list);
 
+        LogUtil.v("Configure ImageLoader");
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(config);
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
 
+        LogUtil.v("ArtistDB.execute()");
         ArtistDatabase ArtistDB = new ArtistDatabase(this, list, imageLoader, options);
         ArtistDB.execute();
 
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         }, REFRESH_TIME);
 
+        LogUtil.v("setAdapter");
         ArtistAdapter adapter = new ArtistAdapter(this,
                 STYLE_ITEM_LIST, artists, imageLoader, options);
         list.setAdapter(adapter);
