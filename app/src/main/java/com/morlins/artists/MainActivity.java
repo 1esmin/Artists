@@ -24,9 +24,18 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
 
-    //константы
+    //строка-ключ для интента
     private static final String ARTIST = "artist";
-    private static final int REFRESHTIME = 4000;
+    //время, которое крутится кружок во время обновления
+    private static final int REFRESH_TIME = 4000;
+    //layout для item'а ListView
+    private static final int STYLE_ITEM_LIST = R.layout.simple_list_item;
+    //цвета для кружочка обновления
+    private static final int HOLO_BLUE_BRIGHT   = android.R.color.holo_blue_bright;
+    private static final int HOLO_GREEN_LIGHT   = android.R.color.holo_green_light;
+    private static final int HOLO_ORANGE_LIGHT  = android.R.color.holo_orange_light;
+    private static final int HOLO_RED_LIGHT     = android.R.color.holo_red_light;
+    private static final int SWIPE_CONTAINER    = R.id.swipe_container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +58,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         artists = ArtistDB.getArtists();
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(SWIPE_CONTAINER);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        mSwipeRefreshLayout.setColorSchemeResources(
+                HOLO_BLUE_BRIGHT,
+                HOLO_GREEN_LIGHT,
+                HOLO_ORANGE_LIGHT,
+                HOLO_RED_LIGHT
+        );
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -76,11 +87,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 ArtistDB = new ArtistDatabase(getBaseContext(), list, imageLoader, options);
                 ArtistDB.execute();
             }
-        }, REFRESHTIME);
+        }, REFRESH_TIME);
 
         ArtistAdapter adapter = new ArtistAdapter(this,
-                R.layout.simple_list_item, artists, imageLoader, options);
+                STYLE_ITEM_LIST, artists, imageLoader, options);
         list.setAdapter(adapter);
     }
-
 }

@@ -20,16 +20,19 @@ import java.util.LinkedList;
 
 
 public class ArtistDatabase extends AsyncTask<Void, Void, String> {
-    ListView list;
+    private ListView list;
     private Context context;
     private String resultJson;
     private LinkedList<Artist> artists;
     private ImageLoader imageLoader;
     private DisplayImageOptions displayImageOptions;
 
-    //константы
+    //адрес с которого получаем json файл
     private static final String JSON_URL
             = "http://cache-default02f.cdn.yandex.net/download.cdn.yandex.net/mobilization-2016/artists.json";
+    //layout для item'а ListView
+    private static final int STYLE_ITEM_LIST = R.layout.simple_list_item;
+
 
     public ArtistDatabase(Context context, ListView list, 
                           ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
@@ -79,17 +82,15 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
         super.onPostExecute(strJson);
         try {
             JSONArray json = new JSONArray(strJson);
-            for (int i = 0; i < json.length(); i++) {
-                JSONObject obj = json.getJSONObject(i);
-                artists.addLast(new Artist(obj));
-            }
+            for (int i = 0; i < json.length(); i++) artists
+                    .addLast(new Artist(json.getJSONObject(i)));
         } catch (JSONException e1) {
             e1.printStackTrace();
         }
 
-        //через адаптер записываем все в ListView
+        //через адаптер записываем все в ListView (отрисовка по мере надобности)
         ArtistAdapter adapter = new ArtistAdapter(context,
-                R.layout.simple_list_item, artists, imageLoader, displayImageOptions);
+                STYLE_ITEM_LIST, artists, imageLoader, displayImageOptions);
         list.setAdapter(adapter);
     }
 }
