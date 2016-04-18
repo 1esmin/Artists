@@ -5,4 +5,5 @@
     <color name="colorAccent">#3F51B5</color>
     <color name="grayDivider">#F2F2F2</color>
     <color name="grayText">#999999</color>
+    <color name="onloading">#999999</color>
 </resources>

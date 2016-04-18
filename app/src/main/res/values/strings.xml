@@ -1,11 +1,25 @@
 <resources>
     <string name="app_name">Исполнители</string>
-    <string name="description">empty</string>
+
     <string name="h1">Description</string>
     <string name="empty">Empty</string>
     <string name="genres">genres</string>
+
     <string name="albums_and_tracks_text">albums and tracks</string>
-    <string name="description_text">descriprion</string>
-    <string name="biograph_text">Биография</string>
+    <string name="description_text">description</string>
+    <string name="biography_text">Биография</string>
+
     <string name="content_description">artist_cover</string>
+
+    <string name="action_settings">Настройки</string>
+    <string name="settings_title_activity">Настройки</string>
+    <string name="action_about">about</string>
+    <string name="about_title_activity">about</string>
+
+    <string name="developer_name">Кулиев Эдуард</string>
+    <string name="developer_email">edya.cool@gmail.com</string>
+    <string name="developer_vk">vk.com/morlins</string>
+
+    <string name="URL_preference_summary">summary</string>
+    <string name="URL_preference_title">title</string>
 </resources>

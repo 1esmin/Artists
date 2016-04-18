@@ -10,7 +10,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class ArtistActivity extends AppCompatActivity{
+public class ArtistActivity extends AppCompatActivity {
     private ImageView image_view;
     private TextView genres_text;
     private TextView albums_and_tracks_text;
@@ -41,7 +41,6 @@ public class ArtistActivity extends AppCompatActivity{
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
 
-        image_view  =           (ImageView) findViewById(R.id.item_small_image);
         genres_text =           (TextView)  findViewById(R.id.artist_genres_text);
         albums_and_tracks_text =(TextView)  findViewById(R.id.artist_albums_and_tracks_text);
         description_text =      (TextView)  findViewById(R.id.artist_description_text);
@@ -51,7 +50,7 @@ public class ArtistActivity extends AppCompatActivity{
 
         Artist artist = intent.getParcelableExtra(ARTIST);
 
-        genres  =       artist.getStringGenres(DELIM_GENRES);
+        genres  = artist.getStringGenres(DELIM_GENRES);
         name    =       artist.getName();
         albums  =       artist.getAlbums();
         tracks  =       artist.getTracks();

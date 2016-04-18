@@ -1,7 +1,10 @@
 package com.morlins.artists;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.widget.ListView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -26,22 +29,29 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
     private LinkedList<Artist> artists;
     private ImageLoader imageLoader;
     private DisplayImageOptions displayImageOptions;
+    private Parcelable state;
 
-    //адрес с которого получаем json файл
-    private static final String JSON_URL
+    SharedPreferences preferences;
+    private String JSON_URL
             = "http://cache-default02f.cdn.yandex.net/download.cdn.yandex.net/mobilization-2016/artists.json";
     //layout для item'а ListView
     private static final int STYLE_ITEM_LIST = R.layout.simple_list_item;
 
 
-    public ArtistDatabase(Context context, ListView list, 
-                          ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
+    public ArtistDatabase(Context context, ListView list, ImageLoader imageLoader,
+                          DisplayImageOptions displayImageOptions) {
         this.list = list;
         resultJson = "";
         artists = new LinkedList<>();
         this.context = context;
         this.imageLoader = imageLoader;
         this.displayImageOptions = displayImageOptions;
+        this.state = null;
+    }
+    public ArtistDatabase(Context context, ListView list, ImageLoader imageLoader,
+                          DisplayImageOptions displayImageOptions, Parcelable state) {
+        this(context, list, imageLoader, displayImageOptions);
+        this.state = state;
     }
 
     public LinkedList<Artist> getArtists() {
@@ -54,7 +64,7 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
         LogUtil.v("ArtistDatabase.doInBackground() start");
         // получаем данные с внешнего ресурса
         try {
-            LogUtil.v("Parse URL");
+            LogUtil.v("Parse json");
             URL url = new URL(JSON_URL);
             LogUtil.v("Download json");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -92,8 +102,10 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
             LogUtil.v("Parse JSONArray");
             for (int i = 0; i < json.length(); i++) artists
                     .addLast(new Artist(json.getJSONObject(i)));
+
         } catch (JSONException e1) {
             e1.printStackTrace();
+
         }
 
         LogUtil.v("setAdapter");
@@ -101,6 +113,10 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
         ArtistAdapter adapter = new ArtistAdapter(context,
                 STYLE_ITEM_LIST, artists, imageLoader, displayImageOptions);
         list.setAdapter(adapter);
+        if(state != null) {
+            LogUtil.v("trying to restore listview state..");
+            list.onRestoreInstanceState(state);
+        }
         LogUtil.v("ArtistDatabase.onPostExecute() end");
     }
 }

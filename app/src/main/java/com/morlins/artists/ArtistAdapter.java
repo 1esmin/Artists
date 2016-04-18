@@ -34,6 +34,7 @@ public class ArtistAdapter extends BaseAdapter {
     //основной конструктор
     public ArtistAdapter(Context context, int item_style, LinkedList<Artist> artists,
                          ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
+        LogUtil.v("ArtistAdapter()");
         this.context = context;
         this.item_style = item_style;
         this.artists = artists;
@@ -41,6 +42,7 @@ public class ArtistAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.imageLoader = imageLoader;
         this.displayImageOptions = displayImageOptions;
+
     }
 
     //возвращает исполнителя по позиции из artists
@@ -71,9 +73,14 @@ public class ArtistAdapter extends BaseAdapter {
             view = lInflater.inflate(item_style, parent, false);
         }
 
+        LogUtil.v("getArtist()");
         Artist artist = getArtist(position);
 
         ImageView image_view = (ImageView) view.findViewById(R.id.item_small_image);
+
+        LogUtil.v("displayImage()");
+        imageLoader.displayImage(artist.getCover()[COVER_POSITION_SMALL_IMAGE],
+                image_view, displayImageOptions);
 
         ((TextView) view.findViewById(R.id.item_name))
                 .setText(artist.getName());
@@ -81,9 +88,6 @@ public class ArtistAdapter extends BaseAdapter {
                 .setText(artist.getStringGenres(DELIM_GENRES));
         ((TextView) view.findViewById(R.id.item_albums_and_tracks))
                 .setText(artist.getStringAlbumsAndTracks(DELIM_ALBUMS_AND_TRACKS));
-
-        imageLoader.displayImage(artist.getCover()[COVER_POSITION_SMALL_IMAGE],
-                image_view, displayImageOptions);
 
         return view;
     }
