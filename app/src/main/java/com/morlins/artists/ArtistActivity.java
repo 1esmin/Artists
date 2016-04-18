@@ -30,6 +30,7 @@ public class ArtistActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.pull_in_from_right, R.anim.hold);
         setContentView(R.layout.activity_artist);
 
         //инициализация загрузчика картинок
@@ -62,5 +63,15 @@ public class ArtistActivity extends AppCompatActivity {
         genres_text.setText(genres);
         albums_and_tracks_text.setText(artist.getStringAlbumsAndTracks(DELIM_ALBUMS_AND_TRACKS));
         description_text.setText(name + DELIM_ALBUMS_AND_TRACKS + description);
+        //TODO: add site link, yandex.music link, top-songs
+    }
+
+    @Override
+    protected void onPause() {
+        // Whenever this activity is paused (i.e. looses focus because another activity is started etc)
+        // Override how this activity is animated out of view
+        // The new activity is kept still and this activity is pushed out to the left
+        overridePendingTransition(R.anim.hold, R.anim.pull_out_to_left);
+        super.onPause();
     }
 }

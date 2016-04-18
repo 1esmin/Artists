@@ -67,6 +67,7 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
             LogUtil.v("Parse json");
             URL url = new URL(JSON_URL);
             LogUtil.v("Download json");
+            //TODO: Do caching
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();

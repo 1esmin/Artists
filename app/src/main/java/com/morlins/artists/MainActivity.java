@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.os.Parcelable;
@@ -99,25 +101,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        if(state != null) {
-            LogUtil.v("trying to restore listview state..");
-            list.onRestoreInstanceState(state);
-        }
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        LogUtil.v("saving listview state @ onPause");
-        state = list.onSaveInstanceState();
-        super.onStop();
-    }
-    
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
