@@ -58,10 +58,8 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LogUtil.v("Create Activity");
         list = (ListView) findViewById(R.id.list);
 
-        LogUtil.v("Configure ImageLoader");
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(config);
@@ -74,7 +72,6 @@ public class MainActivity extends AppCompatActivity
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
 
-        LogUtil.v("ArtistDB.execute()");
         ArtistDatabase ArtistDB = new ArtistDatabase(this, list,
                 imageLoader, options, state);
         ArtistDB.execute();
@@ -94,7 +91,6 @@ public class MainActivity extends AppCompatActivity
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                LogUtil.v("Click Item");
                 Intent intent = new Intent(MainActivity.this, ArtistActivity.class);
                 intent.putExtra(ARTIST, artists.get(position));
                 startActivity(intent);
@@ -127,7 +123,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRefresh() {
-        LogUtil.v("Refresh");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

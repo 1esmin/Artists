@@ -7,7 +7,7 @@
 
     <string name="albums_and_tracks_text">albums and tracks</string>
     <string name="description_text">description</string>
-    <string name="biography_text">Биография</string>
+    <string name="description_header">Биография</string>
 
     <string name="content_description">artist_cover</string>
 
@@ -22,4 +22,6 @@
 
     <string name="URL_preference_summary">summary</string>
     <string name="URL_preference_title">title</string>
+    <string name="link_text">Ссылка на сайт:</string>
+    <string name="links">Ссылки</string>
 </resources>

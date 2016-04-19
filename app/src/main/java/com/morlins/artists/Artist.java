@@ -42,7 +42,6 @@ public class Artist implements Parcelable {
         this.description = description;
         this.genres = genres;
         this.cover = cover;
-        LogUtil.v("new Artist() main");
     }
 
     //вспомогательный конструктор
@@ -55,7 +54,6 @@ public class Artist implements Parcelable {
                 getStringArrayFromJSONObject(cover,
                         new String[]{SMALL, BIG})
         );
-        LogUtil.v("new Artist() with JSONArray and JSONObject");
     }
 
     //вспомогательный конструктор
@@ -66,7 +64,6 @@ public class Artist implements Parcelable {
                 in.readString(),in.readString(),
                 in.createStringArray(), in.createStringArray()
         );
-        LogUtil.v("new Artist(Parcel in)");
     }
 
     public Artist(JSONObject obj) throws JSONException {
@@ -76,7 +73,6 @@ public class Artist implements Parcelable {
                 (String) ifHasGetElseNull(obj, LINK), (String) obj.get(DESCRIPTION),
                 (JSONArray) obj.get(GENRES), (JSONObject) obj.get(COVER)
         );
-        LogUtil.v("new Artist(JSONObject obj)");
     }
 
     //конвертирует JSONArray в String[]
@@ -87,7 +83,6 @@ public class Artist implements Parcelable {
             array[i] = jsonArray.getString(i);
         }
 
-        LogUtil.v("getStringArrayFromJSONArray()");
         return array;
     }
 
@@ -106,7 +101,6 @@ public class Artist implements Parcelable {
             e.printStackTrace();
         }
 
-        LogUtil.v("getStringArrayFromJSONObject()");
         return array;
     }
 
@@ -130,8 +124,6 @@ public class Artist implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        LogUtil.v("writeToParcel()");
-
         dest.writeInt(id);
         dest.writeInt(tracks);
         dest.writeInt(albums);

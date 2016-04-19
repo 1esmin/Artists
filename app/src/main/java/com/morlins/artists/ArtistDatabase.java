@@ -19,6 +19,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.Collator;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 
@@ -61,12 +64,9 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
     //переопределения для реализации методов AsyncTask
     @Override
     protected String doInBackground(Void... params) {
-        LogUtil.v("ArtistDatabase.doInBackground() start");
         // получаем данные с внешнего ресурса
         try {
-            LogUtil.v("Parse json");
             URL url = new URL(JSON_URL);
-            LogUtil.v("Download json");
             //TODO: Do caching
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
@@ -82,42 +82,40 @@ public class ArtistDatabase extends AsyncTask<Void, Void, String> {
                 builder.append(line);
             }
 
-            LogUtil.v("received json");
             resultJson = builder.toString();
 
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LogUtil.v("ArtistDatabase.doInBackground() end");
         return resultJson;
     }
 
     @Override
     protected void onPostExecute(String strJson) {
-        LogUtil.v("ArtistDatabase.onPostExecute() start");
         super.onPostExecute(strJson);
         try {
-            LogUtil.v("Parse JSON");
             JSONArray json = new JSONArray(strJson);
-            LogUtil.v("Parse JSONArray");
+
             for (int i = 0; i < json.length(); i++) artists
                     .addLast(new Artist(json.getJSONObject(i)));
 
+            //TODO: make sort
+            Collections.sort(artists, new Comparator<Artist>() {
+                @Override
+                public int compare(Artist lhs, Artist rhs) {
+                    return Collator.getInstance()
+                            .compare(lhs.getName(), rhs.getName());
+                }
+            });
         } catch (JSONException e1) {
             e1.printStackTrace();
 
         }
 
-        LogUtil.v("setAdapter");
         //через адаптер записываем все в ListView (отрисовка по мере надобности)
         ArtistAdapter adapter = new ArtistAdapter(context,
                 STYLE_ITEM_LIST, artists, imageLoader, displayImageOptions);
         list.setAdapter(adapter);
-        if(state != null) {
-            LogUtil.v("trying to restore listview state..");
-            list.onRestoreInstanceState(state);
-        }
-        LogUtil.v("ArtistDatabase.onPostExecute() end");
     }
 }

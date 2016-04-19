@@ -34,7 +34,6 @@ public class ArtistAdapter extends BaseAdapter {
     //основной конструктор
     public ArtistAdapter(Context context, int item_style, LinkedList<Artist> artists,
                          ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
-        LogUtil.v("ArtistAdapter()");
         this.context = context;
         this.item_style = item_style;
         this.artists = artists;
@@ -73,12 +72,10 @@ public class ArtistAdapter extends BaseAdapter {
             view = lInflater.inflate(item_style, parent, false);
         }
 
-        LogUtil.v("getArtist()");
         Artist artist = getArtist(position);
 
         ImageView image_view = (ImageView) view.findViewById(R.id.item_small_image);
 
-        LogUtil.v("displayImage()");
         imageLoader.displayImage(artist.getCover()[COVER_POSITION_SMALL_IMAGE],
                 image_view, displayImageOptions);
 
