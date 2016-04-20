@@ -1,3 +1,23 @@
+
+
+/*
+ *
+ *  * Copyright (C) 2016 Kuliev Eduard, http://github.com/1esmin/artists
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
+
 package com.morlins.artists;
 
 import android.os.Parcel;
@@ -7,11 +27,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
+@SuppressWarnings("unchecked")
+
 public class Artist implements Parcelable {
-    private Integer id, tracks, albums;
-    private String name, link, description;
-    private String[] genres;
-    private String[] cover;
+    private Integer id, tracks, albums;     //индификатор, кол-во треков, кол-во альбомов
+    private String name, link, description; //имя, ссылка на сайт, описание
+    private ArrayList<String> genres;       //жанры
+    private ArrayList<String> cover;        //обложки
 
     //ключи для получения данных из json
     private static final String ID      = "id";
@@ -24,34 +49,42 @@ public class Artist implements Parcelable {
     private static final String COVER   = "cover";
     private static final String SMALL   = "small";
     private static final String BIG     = "big";
-    //окончания для "альбом" и "песня"
-    private static final String[] ALBUMS_ENDS = {"", "а", "ов"};
-    private static final String[] TRACKS_ENDS = {"ня", "ни", "ен"};
+
+    private static final int SMALL_IMAGE_INDEX  = 0;
+    private static final int BIG_IMAGE_INDEX    = 0;
+
     ///вспомогательные строки для метода getStringAlbumsAndTracks
-    private static final String ALBUM_FOR_RETURN = " альбом";
-    private static final String TRACK_FOR_RETURN = " пес";
+    private static final String ALBUM_WORD = " альбом";
+    private static final String TRACK_WORD = " пес";
+
+    //окончания для "альбом" и "песня"
+    private final String[] ALBUM_WORD_ENDS = {"", "а", "ов"};
+    private final String[] TRACK_WORD_ENDS = {"ня", "ни", "ен"};
 
     //основной конструктор
     public Artist(Integer id, Integer tracks, Integer albums, String name,
-                  String link, String description, String[] genres, String[] cover) {
-        this.id = id;
+                  String link, String description, ArrayList<String> genres,
+                  ArrayList<String> cover) {
+        this.id     = id;
         this.tracks = tracks;
         this.albums = albums;
-        this.name = name;
-        this.link = link;
+        this.name   = name;
+        this.link   = link;
         this.description = description;
         this.genres = genres;
-        this.cover = cover;
+        this.cover  = cover;
     }
 
     //вспомогательный конструктор
-    public Artist(Integer id, Integer tracks, Integer albums, String name,
-                  String link, String description, JSONArray genres, JSONObject cover) throws JSONException {
+    public Artist(
+            Integer id, Integer tracks, Integer albums, String name,
+            String link, String description, JSONArray genres, JSONObject cover
+    ) throws JSONException {
         this(
                 id, tracks, albums,
                 name, link, description,
-                getStringArrayFromJSONArray(genres),
-                getStringArrayFromJSONObject(cover,
+                getArrayList(genres),
+                getArrayList(cover,
                         new String[]{SMALL, BIG})
         );
     }
@@ -62,7 +95,8 @@ public class Artist implements Parcelable {
                 in.readInt(),   in.readInt(),
                 in.readInt(),   in.readString(),
                 in.readString(),in.readString(),
-                in.createStringArray(), in.createStringArray()
+                (ArrayList<String>) in.readSerializable(),
+                (ArrayList<String>) in.readSerializable()
         );
     }
 
@@ -75,31 +109,29 @@ public class Artist implements Parcelable {
         );
     }
 
-    //конвертирует JSONArray в String[]
-    private static String[] getStringArrayFromJSONArray (JSONArray jsonArray) throws JSONException {
-        String[] array = new String[jsonArray.length()];
+    //достает из obj значение с key, если нет, то возвращает null
+    public static Object ifHasGetElseNull(JSONObject obj, String key) throws JSONException {
+        return obj.has(key) ? obj.get(key) : null;
+    }
 
-        for (int i = 0; i < jsonArray.length(); i++) {
-            array[i] = jsonArray.getString(i);
-        }
+    //конвертирует JSONArray в ArrayList<String>
+    private static ArrayList<String> getArrayList(JSONArray jsonArray) throws JSONException {
+        ArrayList<String> array = new ArrayList<>(jsonArray.length());
+
+        for (int i = 0; i < jsonArray.length(); i++)
+            array.add(i, jsonArray.getString(i));
 
         return array;
     }
 
-    //конвертирует JSONObject в String[]
-    private static String[] getStringArrayFromJSONObject (JSONObject jsonObject,
-                                                          String[] image_ids) {
-        String[] array = new String[jsonObject.length()];
+    //конвертирует JSONObject в ArrayList<String>
+    private static ArrayList<String> getArrayList(JSONObject jsonObject,
+                                                  String[] keys) throws JSONException {
+        ArrayList<String> array = new ArrayList<>(jsonObject.length());
 
-        try {
-            int i = 0;
-
-            for (String id : image_ids) {
-                array[i++] = jsonObject.getString(id);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        int i = 0;
+        for (String key : keys)
+            array.add(i++, jsonObject.getString(key));
 
         return array;
     }
@@ -132,13 +164,8 @@ public class Artist implements Parcelable {
         dest.writeString(link);
         dest.writeString(description);
 
-        dest.writeStringArray(genres);
-        dest.writeStringArray(cover);
-    }
-
-    //достает из obj значение с key
-    public static Object ifHasGetElseNull(JSONObject obj, String key) throws JSONException {
-        return obj.has(key) ? obj.get(key) : null;
+        dest.writeSerializable(genres);
+        dest.writeSerializable(cover);
     }
 
     public Integer getId() {
@@ -165,23 +192,28 @@ public class Artist implements Parcelable {
         return description;
     }
 
-    public String[] getGenres() {
+    public ArrayList<String> getGenres() {
         return genres;
     }
 
-    public String[] getCover() {
+    public ArrayList<String> getCover() {
         return cover;
     }
 
+    public String getBigCover() {
+        return getCover().get(BIG_IMAGE_INDEX);
+    }
+
+    public String getSmallCover() {
+        return getCover().get(SMALL_IMAGE_INDEX);
+    }
     /*
         правильное окончание в словосочетании с числом
         !!!массив окончаний должен содержать 3 окончания: для чисел заканчивающихся на 1;
             для чисел на 2, 3, 4; для чисел на 0, 5, 6, 7, 8, 9 и 11-19;
      */
-    public String getRussianEnd(Integer number, String[] ends) {
-        assert (ends.length == 3);
-
-        String resultStr = ends[0];
+    public String getRussianEnd(Integer number, String word, String[] ends) {
+        String end = ends[0];
 
         switch (number % 10) {
             case 1:
@@ -190,7 +222,7 @@ public class Artist implements Parcelable {
             case 2:
             case 3:
             case 4:
-                resultStr = ends[1];
+                end = ends[1];
                 break;
 
             case 0:
@@ -199,35 +231,38 @@ public class Artist implements Parcelable {
             case 7:
             case 8:
             case 9:
-                resultStr = ends[2];
+                end = ends[2];
                 break;
         }
+        //если число от 10 до 19
+        String resultEnd = (number / 10 % 10 != 1 ? end : ends[2]);
 
-        if (number / 10 % 10 == 1) {
-            resultStr =  ends[2];
-        }
-
-        return resultStr;
+        return word + resultEnd;
     }
 
     //отдает строку количества альбомов и песен
     public String getStringAlbumsAndTracks (String delim) {
         Integer albums = getAlbums();
         Integer tracks = getTracks();
-        String[] albumsEnds = ALBUMS_ENDS;
-        String[] tracksEnds = TRACKS_ENDS;
+        String[] albumsEnds = ALBUM_WORD_ENDS;
+        String[] tracksEnds = TRACK_WORD_ENDS;
 
-        return  albums + ALBUM_FOR_RETURN + getRussianEnd(albums, albumsEnds) +
+        return  albums + getRussianEnd(albums, ALBUM_WORD, albumsEnds) +
                 delim  +
-                tracks + TRACK_FOR_RETURN + getRussianEnd(tracks, tracksEnds);
+                tracks + getRussianEnd(tracks, TRACK_WORD, tracksEnds);
     }
 
     //отдает строку жанров ('pop, dance')
     public String getStringGenres(String delim) {
-        String resultStr = "";
+        StringBuilder buffer = new StringBuilder();
 
-        for (int i = 0; i < genres.length - 2; i++) resultStr += genres[i] + delim;
+        for (String genre : genres) {
+            //если элемент последний, то разделитель не добавляется
+            String realStr = genre +
+                    (!genre.equals(genres.get(genres.size() - 1)) ? delim : "");
+            buffer.append(realStr);
+        }
 
-        return genres.length > 0 ? resultStr + genres[genres.length - 1] : "";
+        return buffer.toString();
     }
 }

@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (C) 2016 Kuliev Eduard, http://github.com/1esmin/artists
+  ~  *
+  ~  * Licensed under the Apache License, Version 2.0 (the "License");
+  ~  * you may not use this file except in compliance with the License.
+  ~  * You may obtain a copy of the License at
+  ~  *
+  ~  *      http://www.apache.org/licenses/LICENSE-2.0
+  ~  *
+  ~  * Unless required by applicable law or agreed to in writing, software
+  ~  * distributed under the License is distributed on an "AS IS" BASIS,
+  ~  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  * See the License for the specific language governing permissions and
+  ~  * limitations under the License.
+  ~  */
+  -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -7,7 +25,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <ListView
             android:layout_width="match_parent"
@@ -15,9 +34,15 @@
             android:id="@+id/list"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:divider="@color/grayDivider"
-            android:dividerHeight="@dimen/divider_height"/>
+            android:divider="@color/divider"
+            android:dividerHeight="@dimen/divider_height"
+            />
+        <ProgressBar
+            android:indeterminate="true"
+            android:layout_width="50dp" android:layout_height="50dp"
+            android:id="@+id/marker_progress" style="?android:attr/progressBarStyle"
+            android:layout_gravity="center_vertical|center_horizontal"
+            />
 
     </android.support.v4.widget.SwipeRefreshLayout>
-
 </LinearLayout>

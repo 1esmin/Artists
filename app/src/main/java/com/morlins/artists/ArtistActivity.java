@@ -1,12 +1,28 @@
+/*
+ *
+ *  * Copyright (C) 2016 Kuliev Eduard, http://github.com/1esmin/artists
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
+
 package com.morlins.artists;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,35 +31,40 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-import java.util.ResourceBundle;
-
+//активити для странички исполнителя с подробной информацией
 public class ArtistActivity extends AppCompatActivity {
-    private ImageView image_view;
-    private TextView genres_text;
-    private TextView albums_and_tracks_text;
-    private TextView description_text;
-    private TextView site_link_text;
-    private TextView yandex_music_link_text;
+    //view для:
+    private ImageView image_view;           //обложки исполнителя
+    private TextView genres_view;           //жанров
+    private TextView albums_and_tracks_view;//"творческого результата" исполнителя (кол-во альбомов и треков)
+    private TextView description_view;      //описания
+    private TextView site_link_view;        //ссылки на сайт (если ее нет, то view не отображается)
+    private TextView yandex_music_link_view;//ссылки на страничку в яндекс.музыка
 
-    private String name, description, genres, site_link, yandex_music_link;
-    private Integer albums, tracks, id;
-    private String[] cover;
+    //значения для
+    private String name_text, description_text, //имя исполнителя, описания
+                   link_text, genres_text,      //ссылки на сайт, жанров,
+                   site_link_text,              //ссылки на сайт,
+                   yandex_music_link_text;      //ссылки на страничку в яндекс.музыка
+    private Integer id;                         //индификатора
+    private String cover;                       //обложка (большая)
 
-    //константы
-    private static final int COVER_POSITION_SMALL_IMAGE = 0;
-    private static final int COVER_POSITION_BIG_IMAGE   = 1;
-    private static final String DELIM_GENRES = ", ";
-    private static final String DELIM_ALBUMS_AND_TRACKS = " - ";
-    private static final String ARTIST = "artist";
+    private static final int COVER_POSITION_BIG_IMAGE   = 1;    //индекс большой обложки в cover
+    private String DELIM_COMMA;  //разделитель ', '
+    private String DELIM_DASH;   //разделитель для " - "
+    private String ARTIST;       //строка-ключ для интента
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        overridePendingTransition(R.anim.pull_in_from_right, R.anim.hold);
+        overridePendingTransition(R.anim.pull_in_from_right, R.anim.hold); //анимация появления
         setContentView(R.layout.activity_artist);
 
-        //инициализация загрузчика картинок
-        ImageLoader imageLoader = ImageLoader.getInstance();
+        DELIM_COMMA    = getString(R.string.delim_comma) + " ";
+        DELIM_DASH     = " " + getString(R.string.delim_dash) + " ";
+        ARTIST         = getString(R.string.artist_intent_text);
+
+        ImageLoader imageLoader = ImageLoader.getInstance();    //инициализация загрузчика картинок
         //настройки (включено кэширование в ОЗУ, ПЗУ)
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .cacheInMemory(Boolean.TRUE)
@@ -51,48 +72,53 @@ public class ArtistActivity extends AppCompatActivity {
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
 
-        site_link_text =        (TextView)  findViewById(R.id.artist_site_link);
-        genres_text =           (TextView)  findViewById(R.id.artist_genres_text);
-        albums_and_tracks_text =(TextView)  findViewById(R.id.artist_albums_and_tracks_text);
-        description_text =      (TextView)  findViewById(R.id.artist_description_text);
+        //находим нужные view
+        site_link_view =        (TextView)  findViewById(R.id.artist_site_link);
+        genres_view =           (TextView)  findViewById(R.id.artist_genres_text);
+        albums_and_tracks_view =(TextView)  findViewById(R.id.artist_albums_and_tracks_text);
+        description_view =      (TextView)  findViewById(R.id.artist_description_text);
         image_view       =      (ImageView) findViewById(R.id.artist_big_image);
-        yandex_music_link_text =(TextView)  findViewById(R.id.yandex_music_link);
+        yandex_music_link_view =(TextView)  findViewById(R.id.yandex_music_link);
 
-        yandex_music_link_text.setMovementMethod(LinkMovementMethod.getInstance());
+        //необходимо для естественной работы ссылок (без этого просто текст)
+        yandex_music_link_view.setMovementMethod(LinkMovementMethod.getInstance());
+        site_link_view.setMovementMethod(LinkMovementMethod.getInstance());
 
         Intent intent = getIntent();
 
         Artist artist = intent.getParcelableExtra(ARTIST);
 
-        id      =       artist.getId();
-        genres  =       artist.getStringGenres(DELIM_GENRES);
-        name =       artist.getName();
-        albums  = artist.getAlbums();
-        tracks  =       artist.getTracks();
-        description =   artist.getDescription();
-        cover   =       artist.getCover();
-        String link =   artist.getLink();
+        //вытаскиваем необходимые значения из artist
+        id =                artist.getId();
+        genres_text =       artist.getStringGenres(DELIM_COMMA);
+        name_text   =       artist.getName();
+        description_text =  artist.getDescription();
+        cover       =       artist.getBigCover();
+        link_text   =       artist.getLink();
 
-        yandex_music_link
-                = "<a href=\"http://music.yandex.ru/artist/"
-                + id.toString() + "\">Страничка в Яндекс.Музыка</a>";
+        //собираем строку для ссылки на яндекс.музыку
+        yandex_music_link_text = "<a href=\"" + getString(R.string.yandex_url)
+                + id.toString() + "\">" + getString(R.string.site_yandex_music) + "</a>";
 
-        setTitle(name);
-        imageLoader.displayImage(cover[COVER_POSITION_BIG_IMAGE], image_view, options);
-        genres_text.setText(genres);
-        albums_and_tracks_text.setText(artist.getStringAlbumsAndTracks(DELIM_ALBUMS_AND_TRACKS));
-        description_text.setText(name + DELIM_ALBUMS_AND_TRACKS + description);
-        site_link_text.setText(site_link);
-        yandex_music_link_text.setText(Html.fromHtml(yandex_music_link));
+        //заполняем:
+        setTitle(name_text);
+        imageLoader.displayImage(cover, image_view, options);
+        genres_view.setText(genres_text);
+        albums_and_tracks_view.setText(
+                artist.getStringAlbumsAndTracks(DELIM_DASH)
+        ); //// TODO: 20.04.2016 rename delim
+        description_view.setText(name_text + DELIM_DASH + description_text);
+        site_link_view.setText(site_link_text);
+        yandex_music_link_view.setText(Html.fromHtml(yandex_music_link_text));
 
-        if (link != null) {
-            site_link =     "<a href=\"" + link + "\">Сайт исполнителя</a>";
-            site_link_text.setText(Html.fromHtml(site_link));
+        //если ссылка есть, то она будет выведена, иначе view не будет отображен
+        if (link_text != null) {
+            site_link_text =     "<a href=\"" + link_text
+                    + "\">" + getString(R.string.artist_site) + "</a>";
+            site_link_view.setText(Html.fromHtml(site_link_text));
         } else {
-            site_link_text.setVisibility(View.GONE);
+            site_link_view.setVisibility(View.GONE);
         }
-
-        //TODO: top-songs (?)
     }
 
     @Override

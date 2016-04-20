@@ -1,27 +1,43 @@
+<!--
+  ~ /*
+  ~  * Copyright (C) 2016 Kuliev Eduard, http://github.com/1esmin/artists
+  ~  *
+  ~  * Licensed under the Apache License, Version 2.0 (the "License");
+  ~  * you may not use this file except in compliance with the License.
+  ~  * You may obtain a copy of the License at
+  ~  *
+  ~  *      http://www.apache.org/licenses/LICENSE-2.0
+  ~  *
+  ~  * Unless required by applicable law or agreed to in writing, software
+  ~  * distributed under the License is distributed on an "AS IS" BASIS,
+  ~  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  * See the License for the specific language governing permissions and
+  ~  * limitations under the License.
+  ~  */
+  -->
+
 <resources>
     <string name="app_name">Исполнители</string>
 
-    <string name="h1">Description</string>
-    <string name="empty">Empty</string>
-    <string name="genres">genres</string>
+    <!-- settings_activity.xml -->
+    <string name="title_activity_settings">Настройки</string>
+    <string name="title_activity_about">about</string>
 
-    <string name="albums_and_tracks_text">albums and tracks</string>
-    <string name="description_text">description</string>
-    <string name="description_header">Биография</string>
-
-    <string name="content_description">artist_cover</string>
-
-    <string name="action_settings">Настройки</string>
-    <string name="settings_title_activity">Настройки</string>
-    <string name="action_about">about</string>
-    <string name="about_title_activity">about</string>
-
+    <!-- about_activity.xml -->
     <string name="developer_name">Кулиев Эдуард</string>
     <string name="developer_email">edya.cool@gmail.com</string>
     <string name="developer_vk">vk.com/morlins</string>
 
-    <string name="URL_preference_summary">summary</string>
-    <string name="URL_preference_title">title</string>
-    <string name="link_text">Ссылка на сайт:</string>
-    <string name="links">Ссылки</string>
+    <!-- artist_activity.xml -->
+    <string name="header_links_text">Ссылки</string>
+    <string name="artist_site">Сайт исполнителя</string>
+    <string name="site_yandex_music">Страничка в Яндекс.Музыка</string>
+    <string name="yandex_url">http://music.yandex.ru/artist/</string>
+    <string name="artist_intent_text">artist</string>
+    <string name="delim_dash"> - </string>
+    <string name="delim_comma">, </string>
+    <string name="content_description">artist_cover</string>
+    <string name="json_url">
+        http://cache-default02f.cdn.yandex.net/download.cdn.yandex.net/mobilization-2016/artists.json
+    </string>
 </resources>
