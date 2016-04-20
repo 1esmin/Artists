@@ -21,4 +21,5 @@
     android:duration="150"
     android:fromXDelta="0%"
     android:interpolator="@android:anim/linear_interpolator"
-    android:toXDelta="100%" />
+    android:toXDelta="100%"
+    />

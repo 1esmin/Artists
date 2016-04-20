@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity
     private static final int SWIPE_CONTAINER    = R.id.swipe_container;
 
     //пока картинка не загрузилась, ImageView закрашивается этим цветом
-    private static final int COLOR_IMAGE_ONLOADING  = R.color.onloading;
+    private static final int COLOR_IMAGE_ONLOADING  = R.color.gray;
     //если загрузить не получилось, ImageView закрашивается этим цветом
     private static final int COLOR_IMAGE_ON_FAIL    = COLOR_IMAGE_ONLOADING;
     //если uri оказался пуст, ImageView закрашивается этим цветом
