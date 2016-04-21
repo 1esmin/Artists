@@ -31,6 +31,7 @@
     <!-- artist_activity.xml -->
     <string name="header_links_text">Ссылки</string>
     <string name="artist_site">Сайт исполнителя</string>
+
     <string name="site_yandex_music">Страничка в Яндекс.Музыка</string>
     <string name="yandex_url">http://music.yandex.ru/artist/</string>
     <string name="artist_intent_text">artist</string>
@@ -40,4 +41,5 @@
     <string name="json_url">
         http://cache-default02f.cdn.yandex.net/download.cdn.yandex.net/mobilization-2016/artists.json
     </string>
+    <string name="header_description_text">Биография</string>
 </resources>

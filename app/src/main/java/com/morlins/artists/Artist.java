@@ -51,7 +51,7 @@ public class Artist implements Parcelable {
     private static final String BIG     = "big";
 
     private static final int SMALL_IMAGE_INDEX  = 0;
-    private static final int BIG_IMAGE_INDEX    = 0;
+    private static final int BIG_IMAGE_INDEX    = 1;
 
     ///вспомогательные строки для метода getStringAlbumsAndTracks
     private static final String ALBUM_WORD = " альбом";
