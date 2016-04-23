@@ -56,7 +56,6 @@ public class ArtistAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.imageLoader = imageLoader;
         this.displayImageOptions = displayImageOptions;
-
     }
 
     //возвращает исполнителя по позиции из artists
@@ -104,3 +103,4 @@ public class ArtistAdapter extends BaseAdapter {
         return view;
     }
 }
+

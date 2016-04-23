@@ -19,9 +19,8 @@
 package com.morlins.artists;
 
 import android.content.Context;
-import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.ListView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -31,7 +30,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,14 +40,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 
-
-public class ArtistProvider extends AsyncTask<Void, Void, String> {
+public class ArtistProvider extends AsyncTask<Void, Void, Void> {
     private ListView list;      //список, на который устанавливается адаптер
     private Context context;    //контекст, в котором вызывается
     private LinkedList<Artist> artists; //список исполнителей
     private ImageLoader imageLoader;    /* объект для работы с изображениями
                                             (кэширование, отображение и тд) */
     private DisplayImageOptions displayImageOptions; //настройки для imageLoader
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     //компаратор по которому производится сортировка списка
     private Comparator<Artist> comparator = new Comparator<Artist>() {
@@ -67,45 +65,38 @@ public class ArtistProvider extends AsyncTask<Void, Void, String> {
 
     //конструктор
     public ArtistProvider(Context context, ListView list, ImageLoader imageLoader,
-                          DisplayImageOptions displayImageOptions) {
+                          DisplayImageOptions displayImageOptions,
+                          SwipeRefreshLayout mSwipeRefreshLayout) {
         this.list        = list;
         this.context     = context;
         this.imageLoader = imageLoader;
         this.displayImageOptions = displayImageOptions;
         this.artists     = new LinkedList<>();
+        this.mSwipeRefreshLayout = mSwipeRefreshLayout;
     }
 
     public LinkedList<Artist> getArtists() {
         return artists;
     }
 
+
     //переопределения для реализации методов AsyncTask
     @Override
-    protected String doInBackground(Void... params) {
-        // получаем данные с внешнего ресурса
-        JSON_URL = context.getString(R.string.json_url);
-
-        //кэширование
-        installCache(300 * 1024);
-
-        //получение и парсинг строки. если ответа нет, то
-        //берется кэшированная версия
-        String resultStr = null;
-        try {
-            resultStr = getString(new URL(JSON_URL));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return resultStr;
+    protected void onPreExecute() {
+        super.onPreExecute();
     }
 
     @Override
-    protected void onPostExecute(String strJson) {
-        super.onPostExecute(strJson);
+    protected Void doInBackground(Void... params) {
+        // получаем данные с внешнего ресурса
+        JSON_URL = context.getString(R.string.json_url);
+
+        //получение и парсинг строки. если ответа нет, то
+        //берется кэшированная версия
+
         try {
-            //парсим json в jsonarray
-            JSONArray json = new JSONArray(strJson);
+            //получаем и парсим json в jsonarray
+            JSONArray json = new JSONArray(getString(new URL(JSON_URL)));
 
             //заполняем список artists
             for (int i = 0; i < json.length(); i++)
@@ -113,35 +104,23 @@ public class ArtistProvider extends AsyncTask<Void, Void, String> {
 
             //сортировка по алфавиту
             Collections.sort(artists, comparator);
-        } catch (JSONException e1) {
+        } catch (JSONException | IOException e1) {
             e1.printStackTrace();
         }
+
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void result) {
+        super.onPostExecute(result);
+
+        if (mSwipeRefreshLayout != null) mSwipeRefreshLayout.setRefreshing(false);
 
         //через адаптер записываем все в ListView (отрисовка по мере надобности)
         ArtistAdapter adapter = new ArtistAdapter(context,
                 STYLE_ITEM_LIST, artists, imageLoader, displayImageOptions);
         list.setAdapter(adapter);
-    }
-
-    private void installCache(long cacheSize){
-        //создаем файл
-        final File httpCacheDir = new File(context.getCacheDir(), "http");
-        try {
-            Class.forName("android.net.http.HttpResponseCache")
-                    .getMethod("install", File.class, long.class)
-                    .invoke(null, httpCacheDir, cacheSize);
-            Log.v("cache", "cache set up");
-        } catch (Exception httpResponseCacheNotAvailable) {
-            Log.v("cache", "android.net.http.HttpResponseCache not available, " +
-                    "probably because we're running on a pre-ICS version of Android. " +
-                    "Using com.integralblue.httpresponsecache.HttpHttpResponseCache.");
-        }
-        try {
-            HttpResponseCache.install(httpCacheDir, cacheSize);
-        } catch(Exception e) {
-            Log.v("cache", "Failed to set up ");
-            e.printStackTrace();
-        }
     }
 
     private String getString(URL url) throws IOException {

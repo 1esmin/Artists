@@ -18,11 +18,14 @@ package com.morlins.artists;
 
 import android.content.Intent;
 import android.net.http.HttpResponseCache;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,13 +36,14 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity
         implements SwipeRefreshLayout.OnRefreshListener {
     private ListView list;  // ListView, в который выводятся все исполнители через адаптер
-    private ArtistProvider ArtistDB; //работает с сетью и кэшем
+    private ArtistProvider artistProvider; //работает с сетью и кэшем
     private SwipeRefreshLayout mSwipeRefreshLayout; //необходимо для реализации SwipeRefresh
     private LinkedList<Artist> artists; //список артистов
     private ImageLoader imageLoader;    /* объект для работы с изображениями
@@ -47,7 +51,6 @@ public class MainActivity extends AppCompatActivity
     private DisplayImageOptions options; //настройки imageLoader
 
     private static final String ARTIST = "artist";    //строка-ключ для интента
-    private static final int REFRESH_TIME = 1000;     //время жизни прогресс бара SwipeRefresh
     private static final int STYLE_ITEM_LIST = R.layout.simple_list_item; //layout для item'а ListView
 
     //цвета для SwipeRefresh
@@ -71,7 +74,18 @@ public class MainActivity extends AppCompatActivity
 
         list = (ListView) findViewById(R.id.list);
 
-        //конфигурация
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(SWIPE_CONTAINER);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        //цветовая схема кружочка обновления
+        mSwipeRefreshLayout.setColorSchemeResources(
+                HOLO_BLUE_BRIGHT,
+                HOLO_GREEN_LIGHT,
+                HOLO_ORANGE_LIGHT,
+                HOLO_RED_LIGHT
+        );
+
+        //конфигурация imageLoader
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(config);
@@ -84,22 +98,16 @@ public class MainActivity extends AppCompatActivity
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
 
-        ArtistProvider ArtistDB = new ArtistProvider(this, list,
-                imageLoader, options);
-        ArtistDB.execute();
+        //кэширование ответов сервера
+        installCache(300 * 1024);
 
-        artists = ArtistDB.getArtists();
+        artistProvider = new ArtistProvider(this, list,
+                imageLoader, options, mSwipeRefreshLayout);
+        artistProvider.execute();
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(SWIPE_CONTAINER);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        artists = artistProvider.getArtists();
 
-        mSwipeRefreshLayout.setColorSchemeResources(
-                HOLO_BLUE_BRIGHT,
-                HOLO_GREEN_LIGHT,
-                HOLO_ORANGE_LIGHT,
-                HOLO_RED_LIGHT
-        );
-
+        //события на нажатия пунктов списка
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
@@ -112,45 +120,95 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+
+        return true;
     }
 
+    //создание меню
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                break;
+            //кнопка перехода на новое активити
             case R.id.action_about:
                 intent = new Intent(MainActivity.this, AboutActivity.class);
                 startActivity(intent);
+                break;
+            //очистка кэша
+            case R.id.clear_cache:
+                imageLoader.clearDiskCache();
+                imageLoader.clearMemoryCache();
+                (new AsyncTask<Void, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        try {
+                            clearCache(HttpResponseCache.getInstalled());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Log.d("cache cleared", "false");
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+                        Log.d("cache cleared", "true");
+                    }
+                }).execute();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    //код исполняемый при обновлении
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
-                //// TODO: 19.04.2016 make max-age
-                HttpResponseCache cache = HttpResponseCache.getInstalled();
-                if (cache != null)
-                    try {
-                        cache.delete();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                mSwipeRefreshLayout.setRefreshing(false);
-                ArtistDB = new ArtistProvider(getBaseContext(), list,
-                        imageLoader, options);
-                ArtistDB.execute();
+                try {
+                    clearCache(HttpResponseCache.getInstalled());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                artistProvider = new ArtistProvider(getBaseContext(), list,
+                        imageLoader, options, mSwipeRefreshLayout);
+                artistProvider.execute();
             }
-        }, REFRESH_TIME);
+        });
+    }
+
+    //очищаем кэш
+    private void clearCache(HttpResponseCache cache) throws IOException {
+        imageLoader.clearDiskCache();
+        imageLoader.clearMemoryCache();
+
+        if (cache != null) cache.delete();
+        installCache(300 * 1024);
+    }
+
+    ///инициализируем кэш
+    private void installCache(long cacheSize){
+        final File httpCacheDir = new File(this.getCacheDir(), "http");
+        try {
+            Class.forName("android.net.http.HttpResponseCache")
+                    .getMethod("install", File.class, long.class)
+                    .invoke(null, httpCacheDir, cacheSize);
+            Log.v("cache", "cache set up");
+        } catch (Exception httpResponseCacheNotAvailable) {
+            Log.v("cache", "android.net.http.HttpResponseCache not available, " +
+                    "probably because we're running on a pre-ICS version of Android. " +
+                    "Using com.integralblue.httpresponsecache.HttpHttpResponseCache.");
+        }
+        try {
+            HttpResponseCache.install(httpCacheDir, cacheSize);
+        } catch(Exception e) {
+            Log.v("cache", "Failed to set up ");
+            e.printStackTrace();
+        }
     }
 }

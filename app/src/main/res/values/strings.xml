@@ -42,4 +42,7 @@
         http://cache-default02f.cdn.yandex.net/download.cdn.yandex.net/mobilization-2016/artists.json
     </string>
     <string name="header_description_text">Биография</string>
+    <string name="title_search">Поиск</string>
+    <string name="search_hint">Имя (название группы)</string>
+    <string name="clear_cache">Очистить кэш</string>
 </resources>

@@ -37,12 +37,5 @@
             android:divider="@color/divider"
             android:dividerHeight="@dimen/divider_height"
             />
-        <ProgressBar
-            android:indeterminate="true"
-            android:layout_width="50dp" android:layout_height="50dp"
-            android:id="@+id/marker_progress" style="?android:attr/progressBarStyle"
-            android:layout_gravity="center_vertical|center_horizontal"
-            />
-
     </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>
