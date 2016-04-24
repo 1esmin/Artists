@@ -21,7 +21,7 @@
 
     <!-- settings_activity.xml -->
     <string name="title_activity_settings">Настройки</string>
-    <string name="title_activity_about">about</string>
+    <string name="title_activity_about">Об авторе</string>
 
     <!-- about_activity.xml -->
     <string name="developer_name">Кулиев Эдуард</string>

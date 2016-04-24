@@ -20,26 +20,40 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/item_vertical_padding"
     >
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/developer_name"
         android:id="@+id/developer_name"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:layout_marginBottom="@dimen/text_margin"
         />
+
     <TextView
+        android:autoLink="email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/developer_email"
         android:id="@+id/developer_email"
         android:layout_below="@+id/developer_name"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
+        android:layout_marginBottom="@dimen/text_margin"
+
         />
+
     <TextView
+        android:autoLink="web"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/developer_vk"
         android:id="@+id/developer_vk"
         android:layout_below="@+id/developer_email"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
         />
-
 </RelativeLayout>

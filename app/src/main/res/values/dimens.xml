@@ -33,7 +33,7 @@
 
     <!-- simple_list_item.xml -->
     <dimen name="item_vertical_padding">16dp</dimen>
-    <dimen name="name_size">20sp</dimen>
+    <dimen name="name_size">18sp</dimen>
 
     <!-- overall -->
     <dimen name="paragraph_size">16sp</dimen>

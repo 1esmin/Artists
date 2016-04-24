@@ -33,6 +33,7 @@
         android:layout_height="@dimen/small_image"
         android:scaleType="centerCrop"
         android:contentDescription="@string/content_description"
+        android:layout_marginRight="@dimen/item_vertical_padding"
         />
 
     <TextView
@@ -40,10 +41,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
         android:paddingTop="@dimen/padding_top"
         android:textSize="@dimen/name_size"
+        android:textColor="@android:color/black"
         android:layout_alignTop="@+id/item_small_image"
         android:layout_toRightOf="@+id/item_small_image"
         android:layout_toEndOf="@+id/item_small_image"
@@ -54,8 +54,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
         android:textColor="@color/gray"
         android:textSize="@dimen/paragraph_size"
         android:layout_below="@+id/item_name"
@@ -69,8 +67,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
         android:textColor="@color/gray"
         android:textSize="@dimen/paragraph_size"
         android:layout_alignBottom="@+id/item_small_image"
